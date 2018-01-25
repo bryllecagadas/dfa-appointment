@@ -1,21 +1,14 @@
 <?php
 
-// Sample data
-// fromDate:2018-01-19
-// toDate:2018-06-30
-// siteId:17
-// requestedSlots:1
-
-// AppointmentDate:1516579200000
-// IsAvailable:false
-
+// Set $site_id to any value from this list
+// 
 // 10 - Angeles (MarQuee Mall,Angeles City)
 // 11 - Bacolod
 // 12 - Baguio
 // 14 - Butuan
 // 15 - Cagayan De Oro
 // 16 - Calasiao
-// <option selected="selected" value="17">Cebu</option>
+// 17 - Cebu
 // 18 - Cotabato
 // 4 - DFA Manila (Aseana)
 // 6 - DFA NCR East (Megamall)
@@ -36,10 +29,24 @@
 // 28 - Tacloban
 // 29 - Tuguegarao
 // 30 - Zamboanga
+// 
+// 
+// Sample Data
+// 
+// Request:
+// fromDate:2018-01-19
+// toDate:2018-06-30
+// siteId:17
+// requestedSlots:1
+//
+// Response
+// AppointmentDate:1516579200000
+// IsAvailable:false
 
 $dir = realpath(dirname(__FILE__));
 $lockfile = $dir . "/script.lock";
 $logfile = $dir . '/error.log';
+$site_id = 17;
 
 $mail = "EMAILHERE@MAIL.COM";
 
@@ -66,7 +73,7 @@ $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_POSTFIELDS, array(
 	"fromDate" => date("Y-m-d"),
 	"toDate" => "2018-06-30",
-	"siteId" => 17, // See siteId list
+	"siteId" => $site_id, // See siteId list
 	"requestedSlots" => 1, // Max 5
 ));
 
@@ -77,16 +84,21 @@ $useragents = array(
 );
 
 curl_setopt($ch, CURLOPT_USERAGENT, $useragents[rand(0, 2)]);
+curl_setopt($ch, CURLOPT_REFERER, base64_decode('aHR0cHM6Ly93d3cucGFzc3BvcnQuZ292LnBoL2FwcG9pbnRtZW50L2luZGl2aWR1YWwvc2NoZWR1bGU='));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_REFERER, 'https://www.passport.gov.ph/appointment/individual/schedule');
-curl_setopt($ch, CURLOPT_HTTPHEADER, array('Host: www.passport.gov.ph', 'Origin: https://www.passport.gov.ph'));
+curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	base64_decode('SG9zdDogd3d3LnBhc3Nwb3J0Lmdvdi5waA=='),
+	base64_decode('T3JpZ2luOiBodHRwczovL3d3dy5wYXNzcG9ydC5nb3YucGg='),
+));
 
-$return = curl_exec($ch);
-
+$response = curl_exec($ch);
 curl_close($ch);
-$values = json_decode($return);
+
+$values = json_decode($response);
 if (!is_array($values)) {
 	_msg("No values retrieved");
+	_msg("END: " . date("H:i:s Y/m/d"));
+	unlink($lockfile);
 	exit;
 }
 
