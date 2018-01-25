@@ -78,9 +78,12 @@ $useragents = array(
 
 curl_setopt($ch, CURLOPT_USERAGENT, $useragents[rand(0, 2)]);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-$return = curl_exec($ch);
-curl_close($ch);
+curl_setopt($ch, CURLOPT_REFERER, 'https://www.passport.gov.ph/appointment/individual/schedule');
+curl_setopt($ch, CURLOPT_HTTPHEADER, array('Host: www.passport.gov.ph', 'Origin: https://www.passport.gov.ph'));
 
+$return = curl_exec($ch);
+
+curl_close($ch);
 $values = json_decode($return);
 if (!is_array($values)) {
 	_msg("No values retrieved");
