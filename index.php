@@ -48,7 +48,7 @@ $lockfile = $dir . "/script.lock";
 $logfile = $dir . '/error.log';
 $site_id = 17;
 
-$mail = "EMAILHERE@MAIL.COM";
+$email = "EMAILHERE@MAIL.COM";
 
 function _msg($message) {
 	global $logfile;
@@ -122,7 +122,7 @@ if ($valid) {
 		shell_exec("play " . $dir . "/tuturu_1.mp3 2>/dev/null");
 	}
 
-	if (mail($email, "[DFA] Valid Dates", $message)) {
+	if (mail($email, "[DFA] Valid Dates " . date("H:i:s Y/m/d"), $message)) {
 		_msg("EMAIL SENT");
 	}
 }
